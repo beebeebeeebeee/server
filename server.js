@@ -2,6 +2,7 @@ import log from 'book';
 import Koa from 'koa';
 import tldjs from 'tldjs';
 import Debug from 'debug';
+Debug.log = console.log.bind(console)
 import http from 'http';
 import { hri } from 'human-readable-ids';
 import Router from 'koa-router';
@@ -66,7 +67,7 @@ export default function(opt) {
         const isNewClientRequest = ctx.query['new'] !== undefined;
         if (isNewClientRequest) {
             const reqId = hri.random();
-            debug('making new client with id %s', reqId);
+            console.log('making new client with id %s', reqId);
             const info = await manager.newClient(reqId);
 
             const url = schema + '://' + info.id + '.' + ctx.request.host;
@@ -104,7 +105,7 @@ export default function(opt) {
             return;
         }
 
-        debug('making new client with id %s', reqId);
+        console.log('making new client with id %s', reqId);
         const info = await manager.newClient(reqId);
 
         const url = schema + '://' + info.id + '.' + ctx.request.host;
