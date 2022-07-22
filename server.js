@@ -10,7 +10,7 @@ import ClientManager from './lib/ClientManager';
 
 const debug = Debug('localtunnel:server');
 
-export default function(opt) {
+export default function (opt) {
     opt = opt || {};
 
     const validHosts = (opt.domain) ? [opt.domain] : undefined;
@@ -32,6 +32,7 @@ export default function(opt) {
         const stats = manager.stats;
         ctx.body = {
             tunnels: stats.tunnels,
+            tunnelIds: Object.keys(stats.clients).map(clientId => `${schema}://${clientId}.${ctx.request.host}`),
             mem: process.memoryUsage(),
         };
     });
