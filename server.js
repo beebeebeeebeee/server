@@ -32,7 +32,7 @@ export default function (opt) {
         const stats = manager.stats;
         ctx.body = {
             tunnels: stats.tunnels,
-            tunnelIds: Object.keys(stats.clients).map(clientId => `${schema}://${clientId}.${ctx.request.host}`),
+            tunnelIds: Object.keys(manager.clients).map(clientId => `${schema}://${clientId}.${ctx.request.host}`),
             mem: process.memoryUsage(),
         };
     });
