@@ -1,15 +1,13 @@
 import log from 'book';
 import Koa from 'koa';
 import tldjs from 'tldjs';
-import Debug from 'debug';
-Debug.log = console.log.bind(console)
 import http from 'http';
 import { hri } from 'human-readable-ids';
 import Router from 'koa-router';
 
 import ClientManager from './lib/ClientManager';
 
-const debug = Debug('localtunnel:server');
+const debug = (text, ...args) => { console.log(`localtunnel:server ${text}`, ...args) };
 
 export default function (opt) {
     opt = opt || {};
@@ -67,7 +65,7 @@ export default function (opt) {
         const isNewClientRequest = ctx.query['new'] !== undefined;
         if (isNewClientRequest) {
             const reqId = hri.random();
-            console.log('making new client with id %s', reqId);
+            debug('making new client with id %s', reqId);
             const info = await manager.newClient(reqId);
 
             const url = schema + '://' + info.id + '.' + ctx.request.host;
@@ -105,7 +103,7 @@ export default function (opt) {
             return;
         }
 
-        console.log('making new client with id %s', reqId);
+        debug('making new client with id %s', reqId);
         const info = await manager.newClient(reqId);
 
         const url = schema + '://' + info.id + '.' + ctx.request.host;
