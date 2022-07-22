@@ -52,6 +52,7 @@ const server = CreateServer({
     max_tcp_sockets: argv['max-sockets'],
     secure: argv.secure,
     domain: argv.domain,
+    ['404-redirect']: argv['404-redirect']
 });
 
 server.listen(argv.port, argv.address, () => {
