@@ -5,6 +5,6 @@ services:
                 build: .
                 restart: always
                 network_mode: 'host'
-                command: '-s true -p 7001 -d lt.beebeebeeebeee.com -4r "https://beebeebeeebeee.com/404"'
+                command: '-s true -p 7001 -d lt.beebeebeeebeee.com --4r "https://beebeebeeebeee.com/404"'
                 #logging:
                         #driver: "syslog"
