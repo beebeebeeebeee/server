@@ -10,7 +10,7 @@ import ClientManager from './lib/ClientManager';
 
 const debug = Debug('localtunnel:server');
 
-export default function(opt) {
+export default function (opt) {
     opt = opt || {};
 
     const validHosts = (opt.domain) ? [opt.domain] : undefined;
@@ -134,8 +134,12 @@ export default function(opt) {
 
         const client = manager.getClient(clientId);
         if (!client) {
-            res.statusCode = 404;
-            res.end('404');
+            if (opt['404-redirect'] == null) {
+                res.statusCode = 404;
+                res.end('404');
+            }else{
+                res.redirect(opt['404-redirect'])
+            }
             return;
         }
 
