@@ -138,8 +138,11 @@ export default function (opt) {
             if (opt['404-redirect'] == null) {
                 res.statusCode = 404;
                 res.end('404');
-            }else{
-                res.redirect(opt['404-redirect'])
+            } else {
+                res.writeHead(302, {
+                    location: opt['404-redirect'],
+                });
+                res.end();
             }
             return;
         }
