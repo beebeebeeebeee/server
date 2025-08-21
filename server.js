@@ -54,6 +54,8 @@ export default function (opt) {
     app.use(router.allowedMethods());
 
     // root endpoint
+    // lt.beebeebeeebeee.com?a=ACCESS_TOKEN/hello
+    // lt.beebeebeeebeee.com?a=ACCESS_TOKEN/?new
     app.use(async (ctx, next) => {
         const path = ctx.request.path;
 
@@ -63,9 +65,45 @@ export default function (opt) {
             return;
         }
 
-        const isNewClientRequest = ctx.query['new'] !== undefined;
+        // check access token
+        const accessTokenQuery = ctx.query['a'];
+        if (!accessTokenQuery) {
+            ctx.throw(401);
+            return;
+        }
+
+        const [accessToken, ...parts] = accessTokenQuery.split('/');
+        if (!accessToken || accessToken !== process.env.ACCESS_TOKEN) {
+            ctx.throw(401);
+            return;
+        }
+
+        const isNewClientRequest = parts.length === 1 && parts[0] === '?new';
         if (isNewClientRequest) {
             const reqId = hri.random();
+            debug('making new client with id %s', reqId);
+            const info = await manager.newClient(reqId);
+
+            const url = schema + '://' + info.id + '.' + ctx.request.host;
+            info.url = url;
+            ctx.body = info;
+            return;
+        }
+
+        const isSubdomainRequest = parts.length === 1;
+        if (isSubdomainRequest) {
+            const reqId = parts[0];
+
+            // limit requested hostnames to 63 characters
+            if (! /^(?:[a-z0-9][a-z0-9\-]{4,63}[a-z0-9]|[a-z0-9]{4,63})$/.test(reqId)) {
+                const msg = 'Invalid subdomain. Subdomains must be lowercase and between 4 and 63 alphanumeric characters.';
+                ctx.status = 403;
+                ctx.body = {
+                    message: msg,
+                };
+                return;
+            }
+
             debug('making new client with id %s', reqId);
             const info = await manager.newClient(reqId);
 
@@ -91,6 +129,12 @@ export default function (opt) {
             await next();
             return;
         }
+
+        ctx.status = 400;
+        ctx.body = {
+            message: 'Invalid request',
+        };
+        return;
 
         const reqId = parts[1];
 
